@@ -10,15 +10,16 @@ Game Creating following the Unreal Engine [Course](https://www.udemy.com/unrealc
 - Varying Terrain that can be used to give tactical advantage/make fight more challenging
 
 ## Rules
+- Start with finite health and ammo
 - Taking damage reduces health
-- Taking lethal damage kills you and other tank wins the game
+- Taking damage that kills you means other tank wins the game
 - Can move around in terrain but potentially not all surfaces are accessible
 
 ## Requirements
-### Sound
+### SFX
 - Tank firing
-- Projectile collision
-- Movement
+- Projectile collision/explosion
+- Movement(tank/turret)
 
 ### Particles
 - Cannon projectile(use smoke to indicate course?)
