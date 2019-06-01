@@ -16,6 +16,23 @@ ATank * ATankAIController::GetPlayerTank() const {
 	return Cast<ATank>(playerPawn);
 }
 
+void ATankAIController::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+	//aim towards the UI crosshair at every tick(i.e. frame)
+	AimTowardsPlayer();
+}
+
+void ATankAIController::AimTowardsPlayer() {
+
+	if (!GetControlledTank() || !GetPlayerTank()) { return; }
+
+	auto PlayerLocation = GetPlayerTank()->GetActorLocation();
+	//TODO: Move towards the player
+	//Aim towards the player location
+	GetControlledTank()->AimAt(PlayerLocation);
+	//UE_LOG(LogTemp, Warning, TEXT("%s aiming at player location : %s"), *GetName(), *PlayerLocation.ToString());
+}
+
 void ATankAIController::BeginPlay() {
 
 	Super::BeginPlay();

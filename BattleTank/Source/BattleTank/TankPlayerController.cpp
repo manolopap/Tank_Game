@@ -33,71 +33,69 @@ void ATankPlayerController::Tick(float DeltaTime) {
 void ATankPlayerController::AimTowardsCrosshair() {
 
 	if (!GetControlledTank()) { return; }
-	FVector HitLocation; // an OUT parameter
-	//Get world location of linetrace through crosshair
-	//if ray trace hits
+	FVector HitLocation = FVector(0); // an OUT parameter
+	//Get world location of linetrace through crosshair.
 	if (GetSightRayHitLocation(HitLocation)) {
-		//TODO: tell controlled tank to aim at this point
+		// tell controlled tank to aim at this point
+		GetControlledTank()->AimAt(HitLocation);
+
 	}
 	//else
-		
+
 }
 /*
 * Ray-trace. If hit the landscape update the out parameter with the location and return true
 */
-bool ATankPlayerController::GetSightRayHitLocation(FVector& OutHitLocation) const{
-	//raycast into landscape
-	auto result = FVector(1.0);//GetLocationHit();
-	if (result != FVector(0,0, -999)) {
-		OutHitLocation = result;
+bool ATankPlayerController::GetSightRayHitLocation(FVector& OutHitLocation) const {
+	//Find crosshair location
+	int32 viewportSizeX, viewportSizeY;
+	GetViewportSize(viewportSizeX, viewportSizeY);
+	//calculate the viewport coordinates of the crosshair
+	FVector2D ScreenLocation = FVector2D(viewportSizeX * CrosshairXLocation, viewportSizeY * CrosshairYLocation);
+	FHitResult HitResult;
+	//Get the Hit result directly from the screen position
+	if (GetHitResultAtScreenPosition(ScreenLocation, ECollisionChannel::ECC_WorldStatic, false, HitResult)) {
+		OutHitLocation = HitResult.ImpactPoint;
 		return true;
 	}
+
+	/*
+	Another way to do it is to de-project and then perform a line trace
+	FVector CameraWorldLocation, LookDirection; //two out parameters for the deprojection(the world location is not used)
+	//De-project the screen position of the crosshair to a direction and a 3d position in the world
+	if (DeprojectScreenPositionToWorld(ScreenLocation.X, ScreenLocation.Y, CameraWorldLocation, LookDirection)) {
+		//if the deprojection is successful perform the line trace
+		//updates the result parameter and returns the result of the line-trace
+
+		return (GetLookVectorHitLocation(LookDirection, OutHitLocation));
+	}*/
 	return false;
-	
-	//if hit
-		//get location of hit on landscape
-		//update OutHitLocation
-		//return true
-	//else 
-		//return false
-	
+
 }
 
 
- FVector ATankPlayerController::GetLocationHit() {
-	///Setup query parameters
+bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const {
+	///Setup query parameters(optional)
 	///If we want to use complex tracing rather than simple we change the boolean to true
 	///Ignore Owner so that the line trace will ignore us(otherwise the pawn will be the first object hit)
-	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
-	///Line trace (aka Ray-cast) to reach distance
+	///FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
 	FHitResult HitResult;
-	///if a hit is found, return the result
+	auto StartWorldLocation = PlayerCameraManager->GetCameraLocation();
+	/// the ending location of the raycast
+	auto EndWorldLocation = StartWorldLocation + LookDirection * LineTraceRange;
+	///Line trace (aka Ray-cast) to reach distance
+	///if line trace succeeds, return the location of the hit
 	if (GetWorld()->LineTraceSingleByChannel(
 		HitResult,
-		GetReachLineStart(),
-		GetReachLineEnd(),
-		ECollisionChannel(ECollisionChannel::ECC_WorldStatic),
-		TraceParams)) 
+		StartWorldLocation,
+		EndWorldLocation,
+		ECollisionChannel(ECollisionChannel::ECC_Visibility) //hit anything that is visible
+		//TraceParams optionally use collision parameters
+	))
 	{
-		return HitResult.Location;
+		HitLocation = HitResult.Location;
+		return true;
 	}
-	return FVector(0, 0, -9999);
-	
-	//return HitResult;
-}
-
-FVector ATankPlayerController::GetReachLineStart() {
-	FVector PlayerViewPointLocation;
-	FRotator PlayerViewPointRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
-
-	return PlayerViewPointLocation;
-}
-
-FVector ATankPlayerController::GetReachLineEnd() {
-	FVector PlayerViewPointLocation;
-	FRotator PlayerViewPointRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
-
-	return PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
+	HitLocation = FVector(0);
+	return false; //line trace didnt succeed
 }

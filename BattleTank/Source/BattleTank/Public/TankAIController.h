@@ -23,4 +23,11 @@ private:
 	ATank * GetControlledTank() const; //const means it doesnt change any member variables of the class
 	
 	ATank * GetPlayerTank() const;
+
+	//Override the Tick function
+	virtual void Tick(float DeltaTime) override;
+
+	void AimTowardsPlayer();
+
+
 };
