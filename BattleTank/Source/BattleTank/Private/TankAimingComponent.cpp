@@ -4,6 +4,7 @@
 #include "TankAimingComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TankBarrel.h"
+#include "TankTurret.h"
 
 
 
@@ -12,13 +13,19 @@ UTankAimingComponent::UTankAimingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
 }
 
 void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet) {
+	if (!BarrelToSet) { return; }
 	Barrel = BarrelToSet;
+}
+
+void UTankAimingComponent::SetTurretReference(UTankTurret * TurretToSet) {
+	if (!TurretToSet) { return; }
+	Turret = TurretToSet;
 }
 
 void UTankAimingComponent::AimAt( FVector AimLocation, float LaunchSpeed) {
@@ -41,20 +48,28 @@ void UTankAimingComponent::AimAt( FVector AimLocation, float LaunchSpeed) {
 	{	// Get the Unit vector of the velocity
 		auto AimDirection = LaunchVelocity.GetSafeNormal();
 		MoveBarrelTowards(AimDirection);
-			
-		UE_LOG(LogTemp, Warning, TEXT("Aiming at %s"), *AimDirection.ToString());
+		MoveTurretTowards(AimDirection);
+		//UE_LOG(LogTemp, Warning, TEXT("Aiming at %s"), *AimDirection.ToString());
 	}
 }
 
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection) {
 	//calculate difference between current barrel rotation and AimDirection rotation
-	/*auto BarrelRotator = Barrel->GetForwardVector().Rotation;
+	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto AimAsRotator = AimDirection.Rotation();
-	auto DeltaRotator = AimAsRotator - BarrelRotator;*/
+	auto DeltaRotator = AimAsRotator - BarrelRotator;
 	
-	Barrel->Elevate(5);
+	Barrel->Elevate(DeltaRotator.Pitch);
 }
+void UTankAimingComponent::MoveTurretTowards(FVector AimDirection) {
+	if (!Turret) { return; }
+	//calculate difference between current turret rotation and AimDirection rotation
+	auto TurretRotator = Turret->GetForwardVector().Rotation();
+	auto AimAsRotator = AimDirection.Rotation();
+	auto DeltaRotator = AimAsRotator - TurretRotator;
 
+	Turret->Rotate(DeltaRotator.GetNormalized().Yaw);
+}
 
 
 
