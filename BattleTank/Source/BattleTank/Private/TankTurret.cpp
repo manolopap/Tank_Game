@@ -12,7 +12,7 @@ void UTankTurret::Rotate(float RelativeSpeed) {
 	//the new raw elevation(i.e. not considering the max or min)
 	float NewRotation = RelativeRotation.Yaw + RotationChange;
 	//float ClampedRotation = FMath::Clamp<float>(RawNewRotations, MinElevationDegrees, MaxElevationDegrees);
-	UE_LOG(LogTemp, Warning, TEXT("Rotation: %f"), NewRotation)
+	//UE_LOG(LogTemp, Warning, TEXT("Rotation: %f"), NewRotation)
 	//elevate the barrel(i.e. change yaw) by the amount of elevation
 	SetRelativeRotation(FRotator(0, NewRotation, 0));
 }

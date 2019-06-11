@@ -12,7 +12,7 @@ void UTankBarrel::Elevate(float RelativeSpeed) {
 	//the new raw elevation(i.e. not considering the max or min)
 	float RawNewElevation = RelativeRotation.Pitch + ElevationChange;
 	float ClampedElevation = FMath::Clamp<float>(RawNewElevation, MinElevationDegrees, MaxElevationDegrees);
-	UE_LOG(LogTemp, Warning, TEXT("Elevation: %f"), ClampedElevation)
+	//UE_LOG(LogTemp, Warning, TEXT("Elevation: %f"), ClampedElevation)
 	//elevate the barrel(i.e. change yaw) by the amount of elevation
 	SetRelativeRotation(FRotator(ClampedElevation, 0, 0));
 }
