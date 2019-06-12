@@ -30,8 +30,6 @@ void AProjectile::Tick(float DeltaTime)
 }
 
 void AProjectile::LaunchProjectile(float Speed) {
-
-	UE_LOG(LogTemp, Warning, TEXT("Projectile launched"))
 	//Set the direction of the velocity as the forward vector of the projectile i.e. the same direction the barrel is facing
 	ProjectileMovementComponent->SetVelocityInLocalSpace(FVector::ForwardVector * Speed);
 	ProjectileMovementComponent->Activate();
