@@ -19,6 +19,11 @@ class BATTLETANK_API ATankPlayerController : public APlayerController
 
 public:
 	virtual void BeginPlay() override; //the override keyword makes sure there is something to override in some predecessor
+
+protected:
+	UFUNCTION(BlueprintCallable, Category = Setup)
+	ATank * GetControlledTank() const; //const means it doesnt change any member variables of the class
+
 private :
 	UPROPERTY(EditDefaultsOnly)
 	float LineTraceRange = 10000.f;
@@ -28,8 +33,6 @@ private :
 
 	UPROPERTY(EditDefaultsOnly)
 	float CrosshairYLocation = 0.3333;
-
-	ATank * GetControlledTank() const; //const means it doesnt change any member variables of the class
 
 	//Override the Tick function
 	virtual void Tick(float DeltaTime) override;
