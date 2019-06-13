@@ -6,6 +6,16 @@
 #include "Components/ActorComponent.h"
 #include "TankAimingComponent.generated.h"
 
+//Enum for the different aiming states
+//Note that for Unreal enums you have to annotate with UENUM(), and also provide the general type you want to use(usually uint8)
+UENUM()
+enum class EFiringState : uint8
+{
+	Locked,
+	Aiming,
+	Reloading
+};
+
 //Forward declaration
 class UTankBarrel;
 class UTankTurret;
@@ -28,7 +38,11 @@ public:
 	void SetBarrelReference(UTankBarrel* BarrelToSet);
 
 	void SetTurretReference(UTankTurret* TurretToSet);
-	
+
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = State)
+	EFiringState FiringState = EFiringState::Reloading;
+
 private:
 	//get the barrel i.e. the start location of the projectile
 	UTankBarrel* Barrel = nullptr;
@@ -38,4 +52,6 @@ private:
 	void MoveBarrelTowards(FVector AimDirection);
 
 	void MoveTurretTowards(FVector AimDirection);
+
+	
 };
