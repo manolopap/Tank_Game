@@ -5,6 +5,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
+#include "Projectile.h"
+#include "Engine/World.h"
 
 
 
@@ -22,7 +24,7 @@ void UTankAimingComponent::Initialize(UTankBarrel * BarrelToSet, UTankTurret * T
 	Turret = TurretToSet;
 }
 
-void UTankAimingComponent::AimAt( FVector AimLocation, float LaunchSpeed) {
+void UTankAimingComponent::AimAt( FVector AimLocation) {
 	if (!ensure(Barrel)) { return; }
 	auto BarrelLocation = Barrel->GetSocketLocation(FName("Projectile"));
 	FVector LaunchVelocity;
@@ -57,16 +59,21 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection) {
 	Barrel->Elevate(DeltaRotator.Pitch);
 	Turret->Rotate(DeltaRotator.GetNormalized().Yaw);
 }
-/*
-void UTankAimingComponent::MoveTurretTowards(FVector AimDirection) {
-	if (!Turret) { return; }
-	//calculate difference between current turret rotation and AimDirection rotation
-	auto TurretRotator = Turret->GetForwardVector().Rotation();
-	auto AimAsRotator = AimDirection.Rotation();
-	auto DeltaRotator = AimAsRotator - TurretRotator;
+void UTankAimingComponent::Fire() {
+	if (!ensure(Barrel && ProjectileBlueprint)) { return; }
+	bool isReloaded = (FPlatformTime::Seconds() - LastFireTime > ReloadTimeInSeconds);
+	//if the barrel reference exists and the tank has reloaded, then fire
+	if (isReloaded) {
+		//Spawn a projectile at the socket location of the barrel
+		AProjectile * Projectile = GetWorld()->SpawnActor<AProjectile>
+			(ProjectileBlueprint,
+				Barrel->GetSocketLocation(FName("Projectile")),
+				Barrel->GetSocketRotation(FName("Projectile")));
+		Projectile->LaunchProjectile(LaunchSpeed);
+		//update lastFireTime
+		LastFireTime = FPlatformTime::Seconds();
+	}
 
-	Turret->Rotate(DeltaRotator.GetNormalized().Yaw);
 }
-*/
 
 

@@ -19,6 +19,7 @@ enum class EFiringState : uint8
 //Forward declaration
 class UTankBarrel;
 class UTankTurret;
+class AProjectile;
 
 //
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -36,13 +37,30 @@ public:
 	void Initialize(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet);
 
 	//Aims at the passed location with the given speed
-	void AimAt(FVector AimLocation, float LaunchSpeed);
+	void AimAt(FVector AimLocation);
+
+
+	UFUNCTION(BlueprintCallable, Category = Controls)
+	void Fire();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = State)
 	EFiringState FiringState = EFiringState::Reloading;
 
 private:
+
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	TSubclassOf<AProjectile> ProjectileBlueprint;
+
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float LaunchSpeed = 4000.f;
+
+	//can only edit the Archetype with EditDefaultsOnly, so all Tanks will have the same value(i.e. you cannot edit a specific instance)
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float ReloadTimeInSeconds = 3;
+
+	double LastFireTime = 0;
+
 	//get the barrel i.e. the start location of the projectile
 	UTankBarrel* Barrel = nullptr;
 
@@ -50,7 +68,4 @@ private:
 
 	void MoveBarrelTowards(FVector AimDirection);
 
-	//void MoveTurretTowards(FVector AimDirection);
-
-	
 };

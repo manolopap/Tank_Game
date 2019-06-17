@@ -3,16 +3,16 @@
 
 #include "TankPlayerController.h"
 #include "Engine/World.h"
-#include "Tank.h"
+//#include "Tank.h"
 #include "TankAimingComponent.h"
 
 
 
 
-ATank * ATankPlayerController::GetControlledTank() const {
+/*ATank * ATankPlayerController::GetControlledTank() const {
 	//get the pawn the player is currently possessing	
 	return  Cast<ATank>(GetPawn());
-}
+}*/
 
 /*void ATankPlayerController::FoundAimingComponent(UTankAimingComponent * AimComp) {
 }*/
@@ -21,7 +21,7 @@ void ATankPlayerController::BeginPlay() {
 
 	Super::BeginPlay();
 	//by Begin Play the Aiming Component's constructor should have run(constructors are run before the begin play) and thus it should exist
-	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
+	AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	if (!ensure(AimingComponent)) { return; }
 	FoundAimingComponent(AimingComponent);
 }
@@ -34,13 +34,13 @@ void ATankPlayerController::Tick(float DeltaTime) {
 
 void ATankPlayerController::AimTowardsCrosshair() {
 
-	if (!ensure(GetControlledTank())) { return; }
+	if (!ensure(GetPawn())) { return; }
 	FVector HitLocation = FVector(0); // an OUT parameter
 	//Get world location of linetrace through crosshair.
 	if (GetSightRayHitLocation(HitLocation)) {
 		// tell controlled tank to aim at this point
-		GetControlledTank()->AimAt(HitLocation);
-
+		//GetControlledTank()->AimAt(HitLocation);
+		AimingComponent->AimAt(HitLocation);
 	}
 	//else
 

@@ -8,7 +8,7 @@
 #include "TankPlayerController.generated.h"
 
 //Forward Declaration
-class ATank;
+//class ATank;
 class UTankAimingComponent;
 /**
  * Responsible for helping the player aim
@@ -22,8 +22,10 @@ public:
 	virtual void BeginPlay() override; //the override keyword makes sure there is something to override in some predecessor
 
 protected:
-	UFUNCTION(BlueprintCallable, Category = Setup)
-	ATank * GetControlledTank() const; //const means it doesnt change any member variables of the class
+	/*UFUNCTION(BlueprintCallable, Category = Setup)
+	ATank * GetControlledTank() const; //const means it doesnt change any member variables of the class*/
+
+	UTankAimingComponent* AimingComponent;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Setup)
 	void FoundAimingComponent(UTankAimingComponent* AimComp); //move the access of the AimingComponent from the Tank class to here
