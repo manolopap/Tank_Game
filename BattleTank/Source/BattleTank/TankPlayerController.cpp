@@ -4,6 +4,7 @@
 #include "TankPlayerController.h"
 #include "Engine/World.h"
 #include "Tank.h"
+#include "TankAimingComponent.h"
 
 
 
@@ -13,9 +14,16 @@ ATank * ATankPlayerController::GetControlledTank() const {
 	return  Cast<ATank>(GetPawn());
 }
 
+/*void ATankPlayerController::FoundAimingComponent(UTankAimingComponent * AimComp) {
+}*/
+
 void ATankPlayerController::BeginPlay() {
 
 	Super::BeginPlay();
+	//by Begin Play the Aiming Component's constructor should have run(constructors are run before the begin play) and thus it should exist
+	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
+	if (!ensure(AimingComponent)) { return; }
+	FoundAimingComponent(AimingComponent);
 }
 
 void ATankPlayerController::Tick(float DeltaTime) {
@@ -26,7 +34,7 @@ void ATankPlayerController::Tick(float DeltaTime) {
 
 void ATankPlayerController::AimTowardsCrosshair() {
 
-	if (!GetControlledTank()) { return; }
+	if (!ensure(GetControlledTank())) { return; }
 	FVector HitLocation = FVector(0); // an OUT parameter
 	//Get world location of linetrace through crosshair.
 	if (GetSightRayHitLocation(HitLocation)) {

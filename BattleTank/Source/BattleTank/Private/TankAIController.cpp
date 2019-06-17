@@ -3,7 +3,7 @@
 #include "TankAIController.h"
 #include "Tank.h"
 
-
+//Depends on MovementComponent via Pathfinding System
 
 void ATankAIController::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);

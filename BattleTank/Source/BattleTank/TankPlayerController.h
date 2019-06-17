@@ -9,8 +9,9 @@
 
 //Forward Declaration
 class ATank;
+class UTankAimingComponent;
 /**
- * 
+ * Responsible for helping the player aim
  */
 UCLASS()
 class BATTLETANK_API ATankPlayerController : public APlayerController
@@ -23,6 +24,9 @@ public:
 protected:
 	UFUNCTION(BlueprintCallable, Category = Setup)
 	ATank * GetControlledTank() const; //const means it doesnt change any member variables of the class
+
+	UFUNCTION(BlueprintImplementableEvent, Category = Setup)
+	void FoundAimingComponent(UTankAimingComponent* AimComp); //move the access of the AimingComponent from the Tank class to here
 
 private :
 	UPROPERTY(EditDefaultsOnly)
