@@ -3,23 +3,13 @@
 
 #include "TankPlayerController.h"
 #include "Engine/World.h"
-//#include "Tank.h"
 #include "TankAimingComponent.h"
 
-
-
-
-/*ATank * ATankPlayerController::GetControlledTank() const {
-	//get the pawn the player is currently possessing	
-	return  Cast<ATank>(GetPawn());
-}*/
-
-/*void ATankPlayerController::FoundAimingComponent(UTankAimingComponent * AimComp) {
-}*/
 
 void ATankPlayerController::BeginPlay() {
 
 	Super::BeginPlay();
+	if (!(GetPawn())) { return; } //not using ensure cause we may end up not possessing at runtime
 	//by Begin Play the Aiming Component's constructor should have run(constructors are run before the begin play) and thus it should exist
 	AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	if (!ensure(AimingComponent)) { return; }
@@ -34,7 +24,7 @@ void ATankPlayerController::Tick(float DeltaTime) {
 
 void ATankPlayerController::AimTowardsCrosshair() {
 
-	if (!ensure(GetPawn())) { return; }
+	
 	FVector HitLocation = FVector(0); // an OUT parameter
 	//Get world location of linetrace through crosshair.
 	if (GetSightRayHitLocation(HitLocation)) {

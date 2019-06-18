@@ -61,11 +61,18 @@ private:
 
 	double LastFireTime = 0;
 
+	FVector AimDirection;
+
 	//get the barrel i.e. the start location of the projectile
 	UTankBarrel* Barrel = nullptr;
 
 	UTankTurret* Turret = nullptr;
 
+	virtual void BeginPlay() override;
+
 	void MoveBarrelTowards(FVector AimDirection);
 
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
+
+	bool IsBarrelMoving();
 };
