@@ -33,15 +33,26 @@ void UTankAimingComponent::Initialize(UTankBarrel * BarrelToSet, UTankTurret * T
 }
 
 void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction) {
-	if (GetWorld()->GetTimeSeconds() - LastFireTime < ReloadTimeInSeconds) {
+	if (Ammo <= 0) {
+		FiringState = EFiringState::OutofAmmo;
+	}
+	else if (GetWorld()->GetTimeSeconds() - LastFireTime < ReloadTimeInSeconds) {
 		FiringState = EFiringState::Reloading;
 	}
 	else if (IsBarrelMoving()) {
 		FiringState = EFiringState::Aiming;
 	}
-	else {
+	else{
 		FiringState = EFiringState::Locked;
 	}
+}
+
+EFiringState UTankAimingComponent::GetFiringState() const{
+	return FiringState;
+}
+
+int UTankAimingComponent::GetAmmo() const {
+	return Ammo;
 }
 
 bool UTankAimingComponent::IsBarrelMoving() {
@@ -83,12 +94,13 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection) {
 	auto DeltaRotator = AimAsRotator - BarrelRotator;
 	
 	Barrel->Elevate(DeltaRotator.Pitch);
+	//get the normalized vector so that it gets the shortest route turn
 	Turret->Rotate(DeltaRotator.GetNormalized().Yaw);
 }
 
 void UTankAimingComponent::Fire() {
 	//if the barrel reference exists and the tank has reloaded, then fire
-	if (FiringState != EFiringState::Reloading) {
+	if (FiringState == EFiringState::Locked || FiringState == EFiringState::Aiming) {
 		if (!ensure(Barrel && ProjectileBlueprint)) { return; }
 		//Spawn a projectile at the socket location of the barrel
 		AProjectile * Projectile = GetWorld()->SpawnActor<AProjectile>
@@ -98,6 +110,7 @@ void UTankAimingComponent::Fire() {
 		Projectile->LaunchProjectile(LaunchSpeed);
 		//update lastFireTime
 		LastFireTime = GetWorld()->GetTimeSeconds();
+		Ammo -= 1;
 	}
 
 }

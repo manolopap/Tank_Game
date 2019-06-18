@@ -19,10 +19,13 @@ public:
 	
 	virtual void BeginPlay() override; //the override keyword makes sure there is something to override in some predecessor
 
+protected:
+	//How close can the AI tank get to the player
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	float AcceptanceRadius = 8000;
+
 private:
 	//Override the Tick function
 	virtual void Tick(float DeltaTime) override;
-
-	//How close can the AI tank get to the player
-	float AcceptanceRadius = 3000;
+	
 };

@@ -13,7 +13,8 @@ enum class EFiringState : uint8
 {
 	Locked,
 	Aiming,
-	Reloading
+	Reloading,
+	OutofAmmo
 };
 
 //Forward declaration
@@ -43,6 +44,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Controls)
 	void Fire();
 
+	UFUNCTION(BlueprintCallable, Category = Firing)
+	int GetAmmo() const;
+
+	EFiringState GetFiringState() const;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = State)
 	EFiringState FiringState = EFiringState::Reloading;
@@ -53,13 +59,15 @@ private:
 	TSubclassOf<AProjectile> ProjectileBlueprint;
 
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
-	float LaunchSpeed = 4000.f;
+	float LaunchSpeed = 20000.f;
 
 	//can only edit the Archetype with EditDefaultsOnly, so all Tanks will have the same value(i.e. you cannot edit a specific instance)
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float ReloadTimeInSeconds = 3;
 
 	double LastFireTime = 0;
+
+	int Ammo = 5;
 
 	FVector AimDirection;
 
