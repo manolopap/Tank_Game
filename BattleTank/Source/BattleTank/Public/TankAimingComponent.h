@@ -45,7 +45,7 @@ public:
 	void Fire();
 
 	UFUNCTION(BlueprintCallable, Category = Firing)
-	int GetAmmo() const;
+	int32 GetAmmo() const;
 
 	EFiringState GetFiringState() const;
 
@@ -65,9 +65,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float ReloadTimeInSeconds = 3;
 
-	double LastFireTime = 0;
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	int32 Ammo = 5;
 
-	int Ammo = 5;
+	double LastFireTime = 0;
 
 	FVector AimDirection;
 
