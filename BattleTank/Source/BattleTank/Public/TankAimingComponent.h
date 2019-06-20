@@ -63,7 +63,7 @@ private:
 
 	//can only edit the Archetype with EditDefaultsOnly, so all Tanks will have the same value(i.e. you cannot edit a specific instance)
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
-	float ReloadTimeInSeconds = 3;
+	float ReloadTimeInSeconds = 2;
 
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	int32 Ammo = 5;

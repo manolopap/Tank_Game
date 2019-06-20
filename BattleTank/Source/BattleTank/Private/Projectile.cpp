@@ -3,6 +3,7 @@
 #include "Projectile.h"
 #include "Runtime/Engine/Classes/GameFramework/ProjectileMovementComponent.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
+#include "Runtime/Engine/Classes/PhysicsEngine/RadialForceComponent.h"
 
 
 // Sets default values
@@ -20,6 +21,7 @@ AProjectile::AProjectile()
 	CollisionMesh->SetVisibility(false);
 
 	LaunchBlast = CreateDefaultSubobject<UParticleSystemComponent>(FName("Launch Blast"));
+	//if you dont explicitly attach it will look like it's attached but might not actually be(same for other components)
 	LaunchBlast->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
 	ImpactBlast = CreateDefaultSubobject<UParticleSystemComponent>(FName("Impact Blast"));
@@ -30,6 +32,9 @@ AProjectile::AProjectile()
 	//Prevents projectile from moving until we fire it off
 	ProjectileMovementComponent->bAutoActivate = false;
 
+	ExplosionForce = CreateDefaultSubobject<URadialForceComponent>(FName("Explosion Force"));
+	ExplosionForce->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	//ExplosionForce->bIgnoreOwningActor = true;
 	
 }
 
@@ -46,6 +51,8 @@ void AProjectile::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor,
 	//When the projectile hits something, deactive the launch blast and activate the impact blast particle
 	LaunchBlast->Deactivate();
 	ImpactBlast->Activate();
+	//Add the impulse from the impact to the turret
+	ExplosionForce->FireImpulse();
 }
 
 void AProjectile::LaunchProjectile(float Speed) {
