@@ -2,8 +2,33 @@
 
 #include "TankAIController.h"
 #include "TankAimingComponent.h"
+#include "Tank.h"
 
 //Depends on MovementComponent via Pathfinding System
+
+void ATankAIController::BeginPlay() {
+
+	Super::BeginPlay();
+}
+
+void ATankAIController::SetPawn(APawn* InPawn) {
+
+	Super::SetPawn(InPawn);
+	//if the pawn is possessed
+	if (InPawn) {
+		auto PossessedTank = Cast<ATank>(InPawn);
+		if (!ensure(PossessedTank)) { return; }
+
+		//Subscribe our local delegate method, to the Tank's death event
+		PossessedTank->OnDeath.AddUniqueDynamic(this, &ATankAIController::OnPawnDeath);
+	}
+}
+
+void ATankAIController::OnPawnDeath() {
+
+	GetPawn()->DetachFromControllerPendingDestroy();
+}
+
 
 void ATankAIController::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
@@ -26,9 +51,6 @@ void ATankAIController::Tick(float DeltaTime) {
 	
 }
 
-void ATankAIController::BeginPlay() {
 
-	Super::BeginPlay();
-}
 
 

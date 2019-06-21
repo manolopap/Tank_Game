@@ -4,6 +4,8 @@
 #include "Runtime/Engine/Classes/GameFramework/ProjectileMovementComponent.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime/Engine/Classes/PhysicsEngine/RadialForceComponent.h"
+#include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -53,6 +55,27 @@ void AProjectile::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor,
 	ImpactBlast->Activate();
 	//Add the impulse from the impact to the turret
 	ExplosionForce->FireImpulse();
+	//Destroy the collision mesh so that the projectile disappears after impact
+	SetRootComponent(ImpactBlast);
+	CollisionMesh->DestroyComponent();
+
+	//Apply damage to the tank
+	UGameplayStatics::ApplyRadialDamage(
+		this,
+		AttackDamage,
+		GetActorLocation(),
+		ExplosionForce->Radius, //set the damage radius as the radius of the explosion
+		UDamageType::StaticClass(), //returns an object representing this class
+		TArray<AActor*> () //give empty array of actors to damage = damage all actors within the radius
+
+		);
+
+	//Set a timer to destroy the projectile instance
+	//Alternate ways to do this is: a) Use the Lifespan property
+	//b)Instead of spawing and destroying with timer use a fixed amount of projectiles in the world("pool")
+	//place them in a ring buffer and circle around them, so as to avoid spawing countless projectiles
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AProjectile::OnTimerExpire, DestroyDelay, false);
 }
 
 void AProjectile::LaunchProjectile(float Speed) {
@@ -61,3 +84,6 @@ void AProjectile::LaunchProjectile(float Speed) {
 	ProjectileMovementComponent->Activate();
 }
 
+void AProjectile::OnTimerExpire() {
+	Destroy();
+}

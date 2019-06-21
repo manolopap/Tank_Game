@@ -8,7 +8,7 @@
 #include "TankPlayerController.generated.h"
 
 //Forward Declaration
-//class ATank;
+class ATank;
 class UTankAimingComponent;
 /**
  * Responsible for helping the player aim
@@ -51,6 +51,13 @@ private :
 	//finds the location where the line trace of the crosshair hits
 	//returns true if something was hit and false otherwise
 	bool GetSightRayHitLocation(FVector& OutHitLocation) const;
+
+	//this gets called when the pawn is possessed
+	virtual void SetPawn(APawn* InPawn) override;
+
+	//Function to be called when the possessed tank dies
+	UFUNCTION()
+	void OnPawnDeath();
 
 
 };

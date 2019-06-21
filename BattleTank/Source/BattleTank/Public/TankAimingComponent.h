@@ -59,7 +59,7 @@ private:
 	TSubclassOf<AProjectile> ProjectileBlueprint;
 
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
-	float LaunchSpeed = 20000.f;
+	float LaunchSpeed = 10000.f;
 
 	//can only edit the Archetype with EditDefaultsOnly, so all Tanks will have the same value(i.e. you cannot edit a specific instance)
 	UPROPERTY(EditDefaultsOnly, Category = Firing)

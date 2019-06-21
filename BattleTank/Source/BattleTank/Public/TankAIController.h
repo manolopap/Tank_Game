@@ -7,6 +7,7 @@
 
 //Forward Declaration
 class UTankAimingComponent;
+class ATank;
 /**
  * 
  */
@@ -17,7 +18,7 @@ class BATTLETANK_API ATankAIController : public AAIController
 	
 public:
 	
-	virtual void BeginPlay() override; //the override keyword makes sure there is something to override in some predecessor
+	
 
 protected:
 	//How close can the AI tank get to the player
@@ -25,7 +26,14 @@ protected:
 	float AcceptanceRadius = 8000;
 
 private:
+	virtual void BeginPlay() override; //the override keyword makes sure there is something to override in some predecessor
 	//Override the Tick function
 	virtual void Tick(float DeltaTime) override;
 	
+	//this gets called when the pawn is possessed
+	virtual void SetPawn(APawn* InPawn) override;
+
+	//Function to be called when the possessed tank dies
+	UFUNCTION()
+	void OnPawnDeath();
 };
