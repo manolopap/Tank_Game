@@ -99,7 +99,7 @@ bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVec
 		HitResult,
 		StartWorldLocation,
 		EndWorldLocation,
-		ECollisionChannel(ECollisionChannel::ECC_Visibility) //hit anything that is visible
+		ECollisionChannel(ECollisionChannel::ECC_Camera) //hit anything that is visible
 		//TraceParams optionally use collision parameters
 	))
 	{
