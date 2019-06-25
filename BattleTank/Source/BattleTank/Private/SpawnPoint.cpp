@@ -2,6 +2,7 @@
 
 #include "SpawnPoint.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values for this component's properties
@@ -20,10 +21,14 @@ void USpawnPoint::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//attach to component
-	auto NewActor = GetWorld()->SpawnActor<AActor>(SpawnClass);
-	if (!NewActor) { return; }
-	NewActor->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+	//spawn the actor with a delay at the transform of the component it will be attached to
+	SpawnedActor = GetWorld()->SpawnActorDeferred<AActor>(SpawnClass, GetComponentTransform());
+	if (!SpawnedActor) { return; }
+	//attach the new actor to the instance of this SpawnPoint at the same WolrdTransform
+	//(if we used KeepRelative Transform as in other cases then we would have double the transform, due to adding one above)
+	SpawnedActor->AttachToComponent(this, FAttachmentTransformRules::KeepWorldTransform);
+	//complete the deferred spawning
+	UGameplayStatics::FinishSpawningActor(SpawnedActor, GetComponentTransform());
 	
 }
 
@@ -35,4 +40,5 @@ void USpawnPoint::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 	// ...
 }
+
 
