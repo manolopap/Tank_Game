@@ -11,7 +11,8 @@ ASprungWheel::ASprungWheel()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	//set the tick group as Post Physics so that Tick actions happen after physics actions, i.e. Tick will execute after OnHit
+	PrimaryActorTick.TickGroup = TG_PostPhysics;
 	/**
 	Attachment hierarchy:
 	1.Tank(through tank body)
@@ -41,6 +42,10 @@ ASprungWheel::ASprungWheel()
 void ASprungWheel::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Wheel->SetNotifyRigidBodyCollision(true);
+	Wheel->OnComponentHit.AddUniqueDynamic(this, &ASprungWheel::OnHit);
+
 	SetupConstraint();
 	
 }
@@ -50,12 +55,18 @@ void ASprungWheel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//make sure we are in the correct tick group
+	if (GetWorld()->TickGroup == TG_PostPhysics) {
+		//reset the force magnitude for this frame
+		//if we stop colliding with terrain then this will remain 0
+		TotalForceMagnitudeThisFrame = 0;
+	}
+
 }
 
-void ASprungWheel::AddDrivingForce(float ForceMagnitude) {
+void ASprungWheel::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComponent, FVector NormalImpulse, const FHitResult & Hit) {
 
-	FVector Force = Axle->GetForwardVector() * ForceMagnitude;
-	Wheel->AddForce(Force);
+	ApplyForce();
 }
 
 void ASprungWheel::SetupConstraint() {
@@ -67,5 +78,17 @@ void ASprungWheel::SetupConstraint() {
 	//get the root component i.e. the body of the tank, and the wheel, and bind them to the constraint
 	MassWheelConstraint->SetConstrainedComponents(BodyRoot, NAME_None, Cast<UPrimitiveComponent>(Axle), NAME_None);
 	AxleWheelConstraint->SetConstrainedComponents(Cast<UPrimitiveComponent>(Axle), NAME_None, Cast<UPrimitiveComponent>(Wheel), NAME_None);
+}
+
+
+void ASprungWheel::AddDrivingForce(float ForceMagnitude) {
+
+	TotalForceMagnitudeThisFrame += ForceMagnitude;
+}
+
+void ASprungWheel::ApplyForce() {
+
+	FVector Force = Axle->GetForwardVector() * TotalForceMagnitudeThisFrame;
+	Wheel->AddForce(Force);
 }
 

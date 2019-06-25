@@ -20,6 +20,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	//add to the force coming from the Throttle to the total force
 	void AddDrivingForce(float ForceMagnitude);
 
 protected:
@@ -28,7 +29,15 @@ protected:
 
 
 private:
+	float TotalForceMagnitudeThisFrame = 0;
+
+	void ApplyForce();
+
 	void SetupConstraint();
+
+	//dynamic delegate needs a UFUNCTION annotation
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComponent, FVector NormalImpulse, const FHitResult & Hit);
 
 	UPROPERTY(VisibleAnywhere, Category = Components)
 	USphereComponent* Wheel = nullptr;

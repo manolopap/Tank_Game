@@ -13,7 +13,7 @@ UTankTrack::UTankTrack() {
 
 void UTankTrack::SetThrottle(float Throttle) {
 	//Make sure Throttle doesnt go beyond 2 or -2(was meant to be -1 to 1 but was preventing 2 directions at once e.g forwrad and right, but -2 to 2 seems to work)
-	float CurrentThrottle = FMath::Clamp<float>(Throttle, -2, 2);
+	float CurrentThrottle = FMath::Clamp<float>(Throttle, -1, 1);
 	//Drive tank
 	DriveTrack(CurrentThrottle);
 }
